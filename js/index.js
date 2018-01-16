@@ -5,7 +5,7 @@ var canvasHeight = 400;
 
 var framesPerSecond = 60;
 var secondsForBall = 6;
-var secondsForExpanseCanvas = 20;
+var secondsForExpanseCanvas = 30;
 
 function ball(posX,posY,speedX,speedY,radius,color){
 	this.position = {
@@ -13,6 +13,7 @@ function ball(posX,posY,speedX,speedY,radius,color){
 		y: posY
 	};
 	this.speed = {
+		initialX: speedX,
 		x: speedX,
 		y: speedY
 	};
@@ -21,6 +22,7 @@ function ball(posX,posY,speedX,speedY,radius,color){
 };
 
 var player = {
+	lives: 3,
 	width: 15,
 	height: 100,
 	position: {
@@ -53,31 +55,33 @@ function calculateMousePositionY(e){
 }
 
 window.onload = function(){
-	canvas = document.getElementById('canvasGear');
-	canvas.width = canvasWidth;
-	canvas.height = canvasHeight;
-	canvasCtx = canvas.getContext('2d');
+	setCanvas();
 
-	enemyInit();
+	createEnemy();
 
 	createBall();
 	setInterval(createBall,1000 * secondsForBall);
 
-	setTimeout(function(){
-		canvas.height = canvas.height * 1.5
-	},1000 * secondsForExpanseCanvas);
+	setTimeout(modifyCanvas,1000 * secondsForExpanseCanvas);
 
 	setInterval(function(){
 		move();
 		draw();
 	},1000/framesPerSecond);
+}
+
+function setCanvas(){
+	canvas = document.getElementById('canvasGear');
+	canvas.width = canvasWidth;
+	canvas.height = canvasHeight;
+	canvasCtx = canvas.getContext('2d');
 
 	canvas.addEventListener('mousemove',function(e){
 		player.position.y = calculateMousePositionY(e) - player.height/2;
 	});
 }
 
-function enemyInit(){
+function createEnemy(){
 	enemy.position.x = canvas.width - enemy.radius;
 	enemy.position.y = canvas.height/2;
 }
@@ -87,6 +91,10 @@ function createBall(){
 	balls.push(new ball(canvas.width - ballRadius*2 , enemy.position.y, -5, 3, ballRadius, 'white'));
 	//ball_1.position.x = canvas.width - ball_1.radius;
 	//ball_1.position.y = enemy.position.y;
+}
+
+function modifyCanvas(){
+		canvas.height = canvas.height * 1.5;
 }
 
 /**
@@ -116,8 +124,7 @@ function moveBall(ball_1){
 	ball_1.position.x = ball_1.position.x + ball_1.speed.x;
 	ball_1.position.y = ball_1.position.y + ball_1.speed.y;
 
-
-	if(ball_1.position.x > 0 + player.width/2 && ball_1.position.x < 0 + player.width){	
+	if(ball_1.position.x > 0 + player.width/5 && ball_1.position.x < 0 + player.width){	
 		if(ball_1.position.y > player.position.y && ball_1.position.y < player.position.y+player.height)
 			ball_1.speed.x = -ball_1.speed.x;
 	}
@@ -125,10 +132,13 @@ function moveBall(ball_1){
 		return null;
 	}
 
-	if(ball_1.position.x > canvas.width-ball_1.radius)
+	if(ball_1.position.x > canvas.width-ball_1.radius){
 		ball_1.speed.x = -ball_1.speed.x;
-
-
+		if(ball_1.speed.x > ball_1.speed.initialX * 2){//increase speed:
+			ball_1.speed.x -= 1;
+		}
+	}
+		
 	if(ball_1.position.y < 0)
 		ball_1.speed.y = -ball_1.speed.y;
 	if(ball_1.position.y > canvas.height-ball_1.radius)
@@ -147,15 +157,24 @@ function draw(){
 	//drawing line
 	drawRect(canvas.width-2,0, 2,canvas.height,'black');
 
+	//drawing text
+	drawText("Lives: " + player.lives);
+
 	//drawing player
 	drawRect(player.position.x, player.position.y, player.width, player.height, player.color);
 
-	//drawing ball
-	
+	//drawing balls
 	for(var i =0; i<balls.length;i++){
 		drawCircle(balls[i].position.x, balls[i].position.y, balls[i].radius, 0, Math.PI*2, balls[i].color);
 	}
+
+	//drawing enemy
 	drawCircle(enemy.position.x, enemy.position.y, enemy.radius, 0.5 * Math.PI, 1.5 * Math.PI, enemy.color);
+}
+function drawText(text){
+	canvasCtx.font = "20px Courier red";
+	canvasCtx.fillStyle = "yellow"
+	canvasCtx.fillText(text,20,20);
 }
 
 function drawRect(posX,posY,width,height,color){
@@ -168,4 +187,3 @@ function drawCircle(posX,posY,radius, startAngle, endAngle, color){
 	canvasCtx.arc(posX,posY,radius, startAngle, endAngle, true);
 	canvasCtx.fill();
 }
-
