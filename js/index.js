@@ -16,7 +16,7 @@ var ball = {
 	color: 'white'
 };
 
-var player1 = {
+var player = {
 	width: 15,
 	height: 75,
 	position: {
@@ -24,7 +24,19 @@ var player1 = {
 		y: 300
 	},
 	color: 'white'
-}
+};
+
+var enemy = {
+	position: {
+		x: 0,
+		y: 0
+	},
+	speed: {
+		y: 3
+	},
+	radio: 15,
+	color: 'black'
+};
 
 function calculateMousePositionY(e){
 	var rect = canvas.getBoundingClientRect();
@@ -38,7 +50,8 @@ window.onload = function(){
 	canvas = document.getElementById('canvasGear');
 	canvasCtx = canvas.getContext('2d');
 
-	ballReset();
+	enemyInit();
+	ballInit();
 
 	setInterval(function(){
 		move();
@@ -46,26 +59,42 @@ window.onload = function(){
 	},1000/framesPerSecond);
 
 	canvas.addEventListener('mousemove',function(e){
-		player1.position.y = calculateMousePositionY(e) - player1.height/2;
+		player.position.y = calculateMousePositionY(e) - player.height/2;
 	});
 }
 
-function ballReset(){
+function ballInit(){
 	ball.position.x = canvas.width - ball.radio;
-	ball.position.y = canvas.height/2;
+	ball.position.y = enemy.position.y;
+}
+function enemyInit(){
+	enemy.position.x = canvas.width - enemy.radio;
+	enemy.position.y = canvas.height/2;
 }
 
 function move(){
+	moveEnemy();
+	moveBall();
+}
+function moveEnemy(){
+	enemy.position.y = enemy.position.y + enemy.speed.y;
+
+	if(enemy.position.y < 0)
+		enemy.speed.y = -enemy.speed.y;
+	if(enemy.position.y > canvas.height)
+		enemy.speed.y = -enemy.speed.y;
+}
+function moveBall(){
 	ball.position.x = ball.position.x + ball.speed.x;
 	ball.position.y = ball.position.y + ball.speed.y;
 
 
-	if(ball.position.x > 0 + player1.width/2 && ball.position.x < 0 + player1.width){	
-		if(ball.position.y > player1.position.y && ball.position.y < player1.position.y+player1.height)
+	if(ball.position.x > 0 + player.width/2 && ball.position.x < 0 + player.width){	
+		if(ball.position.y > player.position.y && ball.position.y < player.position.y+player.height)
 			ball.speed.x = -ball.speed.x;
 	}
 	else if(ball.position.x < 0 - (ball.radio * 2))
-		ballReset();
+		ballInit();
 
 	if(ball.position.x > canvas.width-ball.radio)
 		ball.speed.x = -ball.speed.x;
@@ -80,12 +109,15 @@ function move(){
 function draw(){
 	//drawing background
 	drawRect(0,0,canvas.width,canvas.height,'#759B84');
+	//drawing line
+	drawRect(canvas.width-2,0, 2,canvas.height,'black');
 
-	//drawing player1
-	drawRect(player1.position.x, player1.position.y, player1.width, player1.height, player1.color);
+	//drawing player
+	drawRect(player.position.x, player.position.y, player.width, player.height, player.color);
 
 	//drawing ball
 	drawCircle(ball.position.x, ball.position.y, ball.radio, 0, Math.PI*2, ball.color);
+	drawCircle(enemy.position.x, enemy.position.y, enemy.radio, 0.5 * Math.PI, 1.5 * Math.PI, enemy.color);
 }
 
 function drawRect(posX,posY,width,height,color){
@@ -98,3 +130,4 @@ function drawCircle(posX,posY,radio, startAngle, endAngle, color){
 	canvasCtx.arc(posX,posY,radio, startAngle, endAngle, true);
 	canvasCtx.fill();
 }
+
