@@ -1,9 +1,13 @@
 var canvas;
 var canvasCtx;
+var canvasWidth = 1200;
+var canvasHeight = 400;
 
 var framesPerSecond = 60;
+var secondsForBall = 6;
+var secondsForExpanseCanvas = 20;
 
-function ball(posX,posY,speedX,speedY,radio,color){
+function ball(posX,posY,speedX,speedY,radius,color){
 	this.position = {
 		x: posX,
 		y: posY
@@ -12,7 +16,7 @@ function ball(posX,posY,speedX,speedY,radio,color){
 		x: speedX,
 		y: speedY
 	};
-	this.radio = radio;
+	this.radius = radius;
 	this.color = color;
 };
 
@@ -27,7 +31,6 @@ var player = {
 };
 
 var balls = [];
-var secondsForBall = 6;
 
 var enemy = {
 	position: {
@@ -37,7 +40,7 @@ var enemy = {
 	speed: {
 		y: 3
 	},
-	radio: 15,
+	radius: 15,
 	color: 'black'
 };
 
@@ -51,12 +54,18 @@ function calculateMousePositionY(e){
 
 window.onload = function(){
 	canvas = document.getElementById('canvasGear');
+	canvas.width = canvasWidth;
+	canvas.height = canvasHeight;
 	canvasCtx = canvas.getContext('2d');
 
 	enemyInit();
 
 	createBall();
 	setInterval(createBall,1000 * secondsForBall);
+
+	setTimeout(function(){
+		canvas.height = canvas.height * 1.5
+	},1000 * secondsForExpanseCanvas);
 
 	setInterval(function(){
 		move();
@@ -69,14 +78,14 @@ window.onload = function(){
 }
 
 function enemyInit(){
-	enemy.position.x = canvas.width - enemy.radio;
+	enemy.position.x = canvas.width - enemy.radius;
 	enemy.position.y = canvas.height/2;
 }
 
 function createBall(){
-	var ballRadio = 10;
-	balls.push(new ball(canvas.width - ballRadio*2 , enemy.position.y, 5, 3, ballRadio, 'white'));
-	//ball_1.position.x = canvas.width - ball_1.radio;
+	var ballRadius = 10;
+	balls.push(new ball(canvas.width - ballRadius*2 , enemy.position.y, -5, 3, ballRadius, 'white'));
+	//ball_1.position.x = canvas.width - ball_1.radius;
 	//ball_1.position.y = enemy.position.y;
 }
 
@@ -97,9 +106,9 @@ function move(){
 function moveEnemy(){
 	enemy.position.y = enemy.position.y + enemy.speed.y;
 
-	if(enemy.position.y < 0)
+	if(enemy.position.y < 0 + enemy.radius)
 		enemy.speed.y = -enemy.speed.y;
-	if(enemy.position.y > canvas.height)
+	if(enemy.position.y > canvas.height - enemy.radius)
 		enemy.speed.y = -enemy.speed.y;
 }
 
@@ -112,17 +121,17 @@ function moveBall(ball_1){
 		if(ball_1.position.y > player.position.y && ball_1.position.y < player.position.y+player.height)
 			ball_1.speed.x = -ball_1.speed.x;
 	}
-	else if(ball_1.position.x < 0 - (ball_1.radio * 2)){
+	else if(ball_1.position.x < 0 - (ball_1.radius * 2)){
 		return null;
 	}
 
-	if(ball_1.position.x > canvas.width-ball_1.radio)
+	if(ball_1.position.x > canvas.width-ball_1.radius)
 		ball_1.speed.x = -ball_1.speed.x;
 
 
 	if(ball_1.position.y < 0)
 		ball_1.speed.y = -ball_1.speed.y;
-	if(ball_1.position.y > canvas.height-ball_1.radio)
+	if(ball_1.position.y > canvas.height-ball_1.radius)
 		ball_1.speed.y = -ball_1.speed.y;
 
 	return ball_1;
@@ -144,19 +153,19 @@ function draw(){
 	//drawing ball
 	
 	for(var i =0; i<balls.length;i++){
-		drawCircle(balls[i].position.x, balls[i].position.y, balls[i].radio, 0, Math.PI*2, balls[i].color);
+		drawCircle(balls[i].position.x, balls[i].position.y, balls[i].radius, 0, Math.PI*2, balls[i].color);
 	}
-	drawCircle(enemy.position.x, enemy.position.y, enemy.radio, 0.5 * Math.PI, 1.5 * Math.PI, enemy.color);
+	drawCircle(enemy.position.x, enemy.position.y, enemy.radius, 0.5 * Math.PI, 1.5 * Math.PI, enemy.color);
 }
 
 function drawRect(posX,posY,width,height,color){
 	canvasCtx.fillStyle = color;
 	canvasCtx.fillRect(posX,posY,width,height);
 }
-function drawCircle(posX,posY,radio, startAngle, endAngle, color){
+function drawCircle(posX,posY,radius, startAngle, endAngle, color){
 	canvasCtx.fillStyle = color;
 	canvasCtx.beginPath();
-	canvasCtx.arc(posX,posY,radio, startAngle, endAngle, true);
+	canvasCtx.arc(posX,posY,radius, startAngle, endAngle, true);
 	canvasCtx.fill();
 }
 
