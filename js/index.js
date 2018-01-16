@@ -20,7 +20,7 @@ var player1 = {
 	width: 15,
 	height: 75,
 	position: {
-		x: 1,
+		x: 0,
 		y: 300
 	},
 	color: 'white'
@@ -59,9 +59,14 @@ function move(){
 	ball.position.x = ball.position.x + ball.speed.x;
 	ball.position.y = ball.position.y + ball.speed.y;
 
-	if(ball.position.x < 0)
-		//ball.speed.x = -ball.speed.x;
+
+	if(ball.position.x > 0 + player1.width/2 && ball.position.x < 0 + player1.width){	
+		if(ball.position.y > player1.position.y && ball.position.y < player1.position.y+player1.height)
+			ball.speed.x = -ball.speed.x;
+	}
+	else if(ball.position.x < 0 - (ball.radio * 2))
 		ballReset();
+
 	if(ball.position.x > canvas.width-ball.radio)
 		ball.speed.x = -ball.speed.x;
 
