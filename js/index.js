@@ -3,28 +3,31 @@ var canvasCtx;
 
 var framesPerSecond = 60;
 
-var ball = {
-	position: {
-		x: 0,
-		y: 0
-	},
-	speed: {
-		x: 5,
-		y: 2
-	},
-	radio: 10,
-	color: 'white'
+function ball(posX,posY,speedX,speedY,radio,color){
+	this.position = {
+		x: posX,
+		y: posY
+	};
+	this.speed = {
+		x: speedX,
+		y: speedY
+	};
+	this.radio = radio;
+	this.color = color;
 };
 
 var player = {
 	width: 15,
-	height: 75,
+	height: 100,
 	position: {
 		x: 0,
 		y: 300
 	},
 	color: 'white'
 };
+
+var balls = [];
+var secondsForBall = 6;
 
 var enemy = {
 	position: {
@@ -51,7 +54,9 @@ window.onload = function(){
 	canvasCtx = canvas.getContext('2d');
 
 	enemyInit();
-	ballInit();
+
+	createBall();
+	setInterval(createBall,1000 * secondsForBall);
 
 	setInterval(function(){
 		move();
@@ -63,19 +68,32 @@ window.onload = function(){
 	});
 }
 
-function ballInit(){
-	ball.position.x = canvas.width - ball.radio;
-	ball.position.y = enemy.position.y;
-}
 function enemyInit(){
 	enemy.position.x = canvas.width - enemy.radio;
 	enemy.position.y = canvas.height/2;
 }
 
+function createBall(){
+	var ballRadio = 10;
+	balls.push(new ball(canvas.width - ballRadio*2 , enemy.position.y, 5, 3, ballRadio, 'white'));
+	//ball_1.position.x = canvas.width - ball_1.radio;
+	//ball_1.position.y = enemy.position.y;
+}
+
+/**
+* Move
+*/
+
 function move(){
 	moveEnemy();
-	moveBall();
+	for(var i =0; i<balls.length;i++){
+		balls[i] = moveBall(balls[i]);
+	}
+	balls = balls.filter(function(ball){
+		return ball != null;
+	})
 }
+
 function moveEnemy(){
 	enemy.position.y = enemy.position.y + enemy.speed.y;
 
@@ -84,27 +102,35 @@ function moveEnemy(){
 	if(enemy.position.y > canvas.height)
 		enemy.speed.y = -enemy.speed.y;
 }
-function moveBall(){
-	ball.position.x = ball.position.x + ball.speed.x;
-	ball.position.y = ball.position.y + ball.speed.y;
+
+function moveBall(ball_1){
+	ball_1.position.x = ball_1.position.x + ball_1.speed.x;
+	ball_1.position.y = ball_1.position.y + ball_1.speed.y;
 
 
-	if(ball.position.x > 0 + player.width/2 && ball.position.x < 0 + player.width){	
-		if(ball.position.y > player.position.y && ball.position.y < player.position.y+player.height)
-			ball.speed.x = -ball.speed.x;
+	if(ball_1.position.x > 0 + player.width/2 && ball_1.position.x < 0 + player.width){	
+		if(ball_1.position.y > player.position.y && ball_1.position.y < player.position.y+player.height)
+			ball_1.speed.x = -ball_1.speed.x;
 	}
-	else if(ball.position.x < 0 - (ball.radio * 2))
-		ballInit();
+	else if(ball_1.position.x < 0 - (ball_1.radio * 2)){
+		return null;
+	}
 
-	if(ball.position.x > canvas.width-ball.radio)
-		ball.speed.x = -ball.speed.x;
+	if(ball_1.position.x > canvas.width-ball_1.radio)
+		ball_1.speed.x = -ball_1.speed.x;
 
 
-	if(ball.position.y < 0)
-		ball.speed.y = -ball.speed.y;
-	if(ball.position.y > canvas.height-ball.radio)
-		ball.speed.y = -ball.speed.y;
+	if(ball_1.position.y < 0)
+		ball_1.speed.y = -ball_1.speed.y;
+	if(ball_1.position.y > canvas.height-ball_1.radio)
+		ball_1.speed.y = -ball_1.speed.y;
+
+	return ball_1;
 }
+
+/**
+* Draw
+*/
 
 function draw(){
 	//drawing background
@@ -116,7 +142,10 @@ function draw(){
 	drawRect(player.position.x, player.position.y, player.width, player.height, player.color);
 
 	//drawing ball
-	drawCircle(ball.position.x, ball.position.y, ball.radio, 0, Math.PI*2, ball.color);
+	
+	for(var i =0; i<balls.length;i++){
+		drawCircle(balls[i].position.x, balls[i].position.y, balls[i].radio, 0, Math.PI*2, balls[i].color);
+	}
 	drawCircle(enemy.position.x, enemy.position.y, enemy.radio, 0.5 * Math.PI, 1.5 * Math.PI, enemy.color);
 }
 
