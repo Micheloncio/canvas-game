@@ -7,7 +7,7 @@ var framesPerSecond = 60;
 var secondsForBall = 6;
 var secondsForExpanseCanvas = 30;
 
-function ball(posX,posY,speedX,speedY,radius,color){
+function Ball(posX,posY,speedX,speedY,radius,color){
 	this.position = {
 		x: posX,
 		y: posY
@@ -21,6 +21,8 @@ function ball(posX,posY,speedX,speedY,radius,color){
 	this.color = color;
 };
 
+
+
 var player = {
 	lives: 3,
 	width: 15,
@@ -33,18 +35,8 @@ var player = {
 };
 
 var balls = [];
+var enemy;
 
-var enemy = {
-	position: {
-		x: 0,
-		y: 0
-	},
-	speed: {
-		y: 3
-	},
-	radius: 15,
-	color: 'black'
-};
 
 function calculateMousePositionY(e){
 	var rect = canvas.getBoundingClientRect();
@@ -82,15 +74,13 @@ function setCanvas(){
 }
 
 function createEnemy(){
-	enemy.position.x = canvas.width - enemy.radius;
-	enemy.position.y = canvas.height/2;
+	var enemyRadius = 15;
+	enemy = new Enemy(canvas.width - enemyRadius, canvas.height/2, 3, enemyRadius, 'black');
 }
 
 function createBall(){
 	var ballRadius = 10;
-	balls.push(new ball(canvas.width - ballRadius*2 , enemy.position.y, -5, 3, ballRadius, 'white'));
-	//ball_1.position.x = canvas.width - ball_1.radius;
-	//ball_1.position.y = enemy.position.y;
+	balls.push(new Ball(canvas.width - ballRadius*2 , enemy.position.y, -5, 3, ballRadius, 'white'));
 }
 
 function modifyCanvas(){
@@ -102,7 +92,9 @@ function modifyCanvas(){
 */
 
 function move(){
-	moveEnemy();
+	
+	enemy.move(canvas.height);
+
 	for(var i =0; i<balls.length;i++){
 		balls[i] = moveBall(balls[i]);
 	}
@@ -111,14 +103,7 @@ function move(){
 	})
 }
 
-function moveEnemy(){
-	enemy.position.y = enemy.position.y + enemy.speed.y;
 
-	if(enemy.position.y < 0 + enemy.radius)
-		enemy.speed.y = -enemy.speed.y;
-	if(enemy.position.y > canvas.height - enemy.radius)
-		enemy.speed.y = -enemy.speed.y;
-}
 
 function moveBall(ball_1){
 	ball_1.position.x = ball_1.position.x + ball_1.speed.x;
