@@ -10,7 +10,7 @@ function Player (lives,width,height,posX,posY,color){
 };
 
 Player.prototype.hasLives = function(){
-	if(this.lives == 0){
+	if(this.lives <= 0){
 		return false;
 	}
 	return true;
