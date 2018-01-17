@@ -21,6 +21,7 @@ Ball.prototype.move = function (ball_1, player_1){
 			ball_1.speed.x = -ball_1.speed.x;
 	}
 	else if(ball_1.position.x < 0 - (ball_1.radius * 2)){
+		player_1.lives -= 1;
 		return null;
 	}
 

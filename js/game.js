@@ -23,20 +23,23 @@ function gameStart(secondsForBall,secondsForExpanseCanvas,radiusBall,ballSpeedX,
 	createEnemy();
 
 	createBall(radiusBall,ballSpeedX,ballSpeedY);
-	setInterval(function(){
+	var intervalBalls = setInterval(function(){
 		createBall(radiusBall,ballSpeedX,ballSpeedY);
 	},1000 * secondsForBall);
 
-	setTimeout(modifyCanvas,1000 * secondsForExpanseCanvas);
+	var timeoutCanvas = setTimeout(modifyCanvas,1000 * secondsForExpanseCanvas);
 
-	setInterval(function(){
+	var intervalGameCore = setInterval(function(){
 		move();
+		if(checkGameOver()){
+			gameOver(intervalBalls, timeoutCanvas, intervalGameCore);
+		}
 		draw();
 	},1000/60);
 }
 
 function setPlayer(){
-	player = new Player(3,15,100,0,300,'white');
+	player = new Player(1,15,100,0,300,'white');
 }
 
 function setCanvas(){
@@ -80,6 +83,26 @@ function move(){
 }
 
 /**
+* Game Over
+*/
+
+function checkGameOver(){
+	if(!player.hasLives()){
+		return true;
+	}
+	return false;
+}
+
+function gameOver(intervalBalls, timeoutCanvas, intervalGameCore){
+	clearInterval(intervalBalls);
+	clearTimeout(timeoutCanvas);
+	clearInterval(intervalGameCore);
+
+	setTimeout(function(){
+		drawText('GAME OVER', canvas.width/3, canvas.height/2, 72, 'black');		
+	},100);
+}
+/**
 * Draw
 */
 
@@ -90,7 +113,7 @@ function draw(){
 	drawRect(canvas.width-2,0, 2,canvas.height,'black');
 
 	//drawing text
-	drawText("Lives: " + player.lives);
+	drawText('Lives: ' + player.lives, 20, 20, 20, 'yellow');
 
 	//drawing player
 	drawRect(player.position.x, player.position.y, player.width, player.height, player.color);
@@ -103,10 +126,10 @@ function draw(){
 	//drawing enemy
 	drawCircle(enemy.position.x, enemy.position.y, enemy.radius, 0.5 * Math.PI, 1.5 * Math.PI, enemy.color);
 }
-function drawText(text){
-	canvasCtx.font = "20px Courier red";
-	canvasCtx.fillStyle = "yellow"
-	canvasCtx.fillText(text,20,20);
+function drawText(text, posX, posY, size,color){
+	canvasCtx.font = size + 'px Courier';
+	canvasCtx.fillStyle = color;
+	canvasCtx.fillText(text,posX,posY);
 }
 
 function drawRect(posX,posY,width,height,color){

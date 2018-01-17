@@ -8,3 +8,10 @@ function Player (lives,width,height,posX,posY,color){
 	};
 	this.color = color;
 };
+
+Player.prototype.hasLives = function(){
+	if(this.lives == 0){
+		return false;
+	}
+	return true;
+}
