@@ -39,14 +39,14 @@ function gameStart(secondsForBall,secondsForExpanseCanvas,radiusBall,ballSpeedX,
 }
 
 function setPlayer(){
-	player = new Player(1,15,100,0,300,'white');
+	player = new Player(3,15,100,0,300,'white');
 }
 
 function setCanvas(){
 	canvas = document.getElementById('canvasGear');
 	canvas.width = canvasWidth;
 	canvas.height = canvasHeight;
-	canvasCtx = canvas.getContext('2d');
+	canvasCtx = this.canvas.getContext('2d');
 
 	canvas.addEventListener('mousemove',function(e){
 		player.position.y = calculateMousePositionY(e) - player.height/2;
@@ -109,6 +109,7 @@ function gameOver(intervalBalls, timeoutCanvas, intervalGameCore){
 function draw(){
 	//drawing background
 	drawRect(0,0,canvas.width,canvas.height,'#759B84');
+
 	//drawing line
 	drawRect(canvas.width-2,0, 2,canvas.height,'black');
 
