@@ -7,6 +7,7 @@ function Player (lives,width,height,posX,posY,color){
 		y: posY
 	};
 	this.color = color;
+	this.points = 0;
 };
 
 Player.prototype.hasLives = function(){

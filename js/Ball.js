@@ -17,8 +17,10 @@ Ball.prototype.move = function (ball_1, player_1){
 	ball_1.position.y = ball_1.position.y + ball_1.speed.y;
 
 	if(ball_1.position.x > 0 + player_1.width/5 && ball_1.position.x < 0 + player_1.width){	
-		if(ball_1.position.y > player_1.position.y && ball_1.position.y < player_1.position.y+player_1.height)
+		if(ball_1.position.y > player_1.position.y && ball_1.position.y < player_1.position.y+player_1.height){
 			ball_1.speed.x = -ball_1.speed.x;
+			player_1.points = player_1.points+1;
+		}
 	}
 	else if(ball_1.position.x < 0 - (ball_1.radius * 2)){
 		player_1.lives -= 1;

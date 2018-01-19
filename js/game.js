@@ -116,6 +116,8 @@ function draw(){
 	//drawing text
 	drawText('Lives: ' + player.lives, 20, 20, 20, 'yellow');
 
+	drawText('Points: ' + player.points, 160, 20, 20, 'yellow');
+
 	//drawing player
 	drawRect(player.position.x, player.position.y, player.width, player.height, player.color);
 
