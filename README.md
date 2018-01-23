@@ -10,3 +10,7 @@ This repo uses canvas to make a simple game.
 
 Html and Javascript.
 
+### Demo
+
+[Try game](http://bloodbowl.es/canvas-game/index.html)
+
